@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
 import shutil
+from pathlib import Path
 import matplotlib.pyplot as plt
 import unrealcv
 from unrealcv.util import read_png
@@ -14,41 +13,40 @@ class UE5EnvWrapper:
     def __init__(self, port: int = 8500):
         global ue5
         ue5 = unrealcv.Client(("localhost", port))
-        ue5.connect(5)
+        ue5.connect(timeout=5)
         if ue5.isconnected():
             print(ue5.request("vget /unrealcv/status"))
         else:
-            print("Failed to Connect to UnrealCV server")
-            exit(0)
+            raise Exception(f"Failed to connect to the UnrealCV server at port: {port}")
 
     def isconnected(self):
         """Is the program connected to Unreal"""
-        return self.connected
+        return self.ue5.isconnected()
 
     def reset(self):
         """Reset robot to start location. Interacts with UE5 Blueprint."""
         ue5.request(f"vset /action/keyboard backspace 1")
 
-    def getCameraLocation(self, cameraID: float) -> tuple[float, float, float]:
+    def getCameraLocation(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns X, Y, Z location of a camera in the Unreal Environment."""
         x, y, z = ue5.request(f"vget /camera/{cameraID}/location").split()
-        return (float(x), float(y), float(z))
+        return float(x), float(y), float(z)
 
-    def getCameraRotation(self, cameraID: float) -> tuple[float, float, float]:
+    def getCameraRotation(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns Pitch, Yaw, and Roll values for Camera number"""
         pitch, yaw, roll = ue5.request(f"vget /camera/{cameraID}/rotation").split()
         return float(pitch), float(yaw), float(roll)
 
-    def left(self, degreeRot: float, cameraNum: int) -> None:
+    def left(self, degreeRot: float, cameraID: int = 0) -> None:
         """Rotate camera left a number of degrees."""
-        currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraNum)
+        currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraID)
         ue5.request(
             f"vset /camera/0/rotation {currentPitch} {float(currentYaw) - degreeRot} {currentRoll}"
         )
 
-    def right(self, degreeRot: float, cameraNum: int) -> None:
+    def right(self, degreeRot: float, cameraID: int = 0) -> None:
         """Rotate camera right a number of degrees."""
-        currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraNum)
+        currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraID)
         ue5.request(
             f"vset /camera/0/rotation {currentPitch} {float(currentYaw) + degreeRot} {currentRoll}"
         )
@@ -66,9 +64,9 @@ class UE5EnvWrapper:
         """Opens a new level in the UE5 Environment. UnrealCV built in command"""
         ue5.request(f"open {levelName}")
 
-    def request_image(self, cameraNum: int):
+    def request_image(self, cameraID: int):
         """Get an image from a specific camera, used with matplotlib"""
-        image_data = ue5.request(f"vget /camera/{cameraNum}/lit jpg")
+        image_data = ue5.request(f"vget /camera/{cameraID}/lit jpg")
         return read_png(image_data)
 
     def save_image(self, cameraNum: int, annotation: str, finalPath: str) -> None:
@@ -83,6 +81,7 @@ class UE5EnvWrapper:
             str: path image was saved to
         """
         imagePath = ue5.request(f"vget /camera/{cameraNum}/lit {annotation}.jpg")
+        # TODO change to PathLib and find out if unrealcv will store the file on the local machine or in the cloud
         shutil.move(imagePath, finalPath)
 
     def show(self):
