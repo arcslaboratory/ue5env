@@ -37,6 +37,12 @@ class UE5EnvWrapper:
         pitch, yaw, roll = ue5.request(f"vget /camera/{cameraID}/rotation").split()
         return float(pitch), float(yaw), float(roll)
 
+    def setCameraLocation(
+        self, pitch: float, yaw: float, roll: float, cameraID: int = 0
+    ):
+        """Sets Pitch, Yaw, and Roll values for a specific number"""
+        ue5.request(f"vset /camera/{cameraID}/rotation {pitch} {yaw} {roll}")
+
     def left(self, degreeRot: float, cameraID: int = 0) -> None:
         """Rotate camera left a number of degrees."""
         currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraID)
