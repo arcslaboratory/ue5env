@@ -32,16 +32,21 @@ class UE5EnvWrapper:
         x, y, z = ue5.request(f"vget /camera/{cameraID}/location").split()
         return float(x), float(y), float(z)
 
+    def setCameraLocation(self, x: float, y: float, z: float, cameraID: int = 0):
+        """Sets X, Y, and Z values of an Unreal Camera."""
+        ue5.request(f"vset /camera/{cameraID}/rotation {x} {y} {z}")
+
     def getCameraRotation(self, cameraID: int = 0) -> tuple[float, float, float]:
-        """Returns Pitch, Yaw, and Roll values for Camera number"""
+        """Returns Pitch, Yaw, and Roll values for Camera number."""
         pitch, yaw, roll = ue5.request(f"vget /camera/{cameraID}/rotation").split()
         return float(pitch), float(yaw), float(roll)
 
-    def setCameraLocation(
-        self, pitch: float, yaw: float, roll: float, cameraID: int = 0
-    ):
-        """Sets Pitch, Yaw, and Roll values for a specific number"""
-        ue5.request(f"vset /camera/{cameraID}/rotation {pitch} {yaw} {roll}")
+    def setCameraYaw(self, yawDegree: float, cameraID: int = 0):
+        """Set Camera Yaw value in unreal for a specific camera."""
+        currentPitch, _, currentRoll = self.getCameraRotation(cameraID)
+        ue5.request(
+            f"vset /camera/{cameraID}/rotation {currentPitch} {yawDegree} {currentRoll}"
+        )
 
     def left(self, degreeRot: float, cameraID: int = 0) -> None:
         """Rotate camera left a number of degrees."""
