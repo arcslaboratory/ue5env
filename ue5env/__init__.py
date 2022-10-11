@@ -34,7 +34,7 @@ class UE5EnvWrapper:
 
     def setCameraLocation(self, x: float, y: float, z: float, cameraID: int = 0):
         """Sets X, Y, and Z values of an Unreal Camera."""
-        ue5.request(f"vset /camera/{cameraID}/rotation {x} {y} {z}")
+        ue5.request(f"vset /camera/{cameraID}/location {x} {y} {z}")
 
     def getCameraRotation(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns Pitch, Yaw, and Roll values for Camera number."""
