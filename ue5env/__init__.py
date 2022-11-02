@@ -80,20 +80,21 @@ class UE5EnvWrapper:
         image_data = ue5.request(f"vget /camera/{cameraID}/lit jpg")
         return read_png(image_data)
 
-    def save_image(self, cameraNum: int, annotation: str, finalPath: str) -> None:
+    def save_image(self, cameraNum: int, annotation: str) -> None:
         """Saves Image to a specific path
 
         Args:
             cameraNum (Int): Camera to get picture from
-            annotation (Str): File extension for image(.jpg, .png)
-            path (str): _description_
+            annotation (Str): File extension for image(jpg, png)
+            image_name (str): name of image to save
 
         Returns:
             str: path image was saved to
         """
-        imagePath = ue5.request(f"vget /camera/{cameraNum}/lit {annotation}.jpg")
+        imagePath = ue5.request(f"vget /camera/{cameraNum}/lit high.png")
+        return imagePath
         # TODO change to PathLib and find out if unrealcv will store the file on the local machine or in the cloud
-        shutil.move(imagePath, finalPath)
+        # shutil.move(imagePath, finalPath)
 
     def show(self):
         """If matplotlib is being used, show the image taken to the plot"""
