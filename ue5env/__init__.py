@@ -11,6 +11,7 @@ class UE5EnvWrapper:
     """Wrapper that handles interactions between the program and Unreal Engine and takes the forwarded port as an input"""
 
     def __init__(self, port: int = 8500):
+        self.highres_photo_location_win = "C:/Users/simon/OneDrive/Documents"
         global ue5
         ue5 = unrealcv.Client(("localhost", port))
         ue5.connect(timeout=5)
@@ -91,7 +92,10 @@ class UE5EnvWrapper:
         Returns:
             str: path image was saved to
         """
-        imagePath = ue5.request(f"vget /camera/{cameraNum}/lit high.png")
+        # imagePath = ue5.request(f"vget /camera/{cameraNum}/lit high.png")
+        # return imagePath
+        ue5.request("vset /action/keyboard 1 1")
+        imagePath = f"{self.highres_photo_location_win}/Unreal Projects/OldenborgUE/Saved/Screenshots/WindowsEditor/highres.png"
         return imagePath
         # TODO change to PathLib and find out if unrealcv will store the file on the local machine or in the cloud
         # shutil.move(imagePath, finalPath)
