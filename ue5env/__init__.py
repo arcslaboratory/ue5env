@@ -3,6 +3,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import unrealcv
 from unrealcv.util import read_png
+import time
 
 __author__ = "Simon Heck"
 
@@ -94,7 +95,8 @@ class UE5EnvWrapper:
         """
         # imagePath = ue5.request(f"vget /camera/{cameraNum}/lit high.png")
         # return imagePath
-        ue5.request("vset /action/keyboard 1 1")
+        ue5.request("vset /action/keyboard tab 0.1")
+        time.sleep(1)
         imagePath = f"{self.highres_photo_location_win}/Unreal Projects/OldenborgUE/Saved/Screenshots/WindowsEditor/highres.png"
         return imagePath
         # TODO change to PathLib and find out if unrealcv will store the file on the local machine or in the cloud
