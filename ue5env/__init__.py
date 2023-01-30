@@ -74,11 +74,11 @@ class UE5EnvWrapper:
 
     def open_level(levelName: str) -> None:
         """Opens a new level in the UE5 Environment. UnrealCV built in command"""
-        self.ue5.request(f"open {levelName}")
+        # self.ue5.request(f"open {levelName}")
 
     def request_image(self, cameraID: int):
         """Get an image from a specific camera, used with matplotlib"""
-        image_data = ue5.request(f"vget /camera/{cameraID}/lit jpg")
+        image_data = self.ue5.request(f"vget /camera/{cameraID}/lit jpg")
         return read_png(image_data)
 
     def save_image(self, cameraNum: int, annotation: str) -> None:
@@ -94,7 +94,7 @@ class UE5EnvWrapper:
         """
         # imagePath = ue5.request(f"vget /camera/{cameraNum}/lit high.png")
         # return imagePath
-        ue5.request("vset /action/keyboard tab 0.1")
+        self.ue5.request("vset /action/keyboard tab 0.1")
         time.sleep(1)
         imagePath = f"{self.highres_photo_location_win}/Unreal Projects/OldenborgUE/Saved/Screenshots/WindowsEditor/highres.png"
         return imagePath
