@@ -12,7 +12,6 @@ class UE5EnvWrapper:
     """Wrapper that handles interactions between the program and Unreal Engine and takes the forwarded port as an input"""
 
     def __init__(self, port: int = 8500):
-        self.highres_photo_location_win = "C:/Users/simon/OneDrive/Documents"
         self.ue5 = unrealcv.Client(("localhost", port))
         self.ue5.connect(timeout=5)
         if self.ue5.isconnected():
@@ -26,11 +25,11 @@ class UE5EnvWrapper:
 
     def reset(self):
         """Reset robot to start location. Interacts with UE5 Blueprint."""
-        self.ue5.request(f"vset /action/keyboard backspace 1")
+        self.ue5.request(f"vset /action/keyboard backspace 0.1")
 
     def getCameraLocation(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns X, Y, Z location of a camera in the Unreal Environment."""
-        x, y, z = ue5.request(f"vget /camera/{cameraID}/location").split()
+        x, y, z = self.ue5.request(f"vget /camera/{cameraID}/location").split()
         return float(x), float(y), float(z)
 
     def setCameraLocation(self, x: float, y: float, z: float, cameraID: int = 0):
@@ -39,7 +38,7 @@ class UE5EnvWrapper:
 
     def getCameraRotation(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns Pitch, Yaw, and Roll values for Camera number."""
-        pitch, yaw, roll = ue5.request(f"vget /camera/{cameraID}/rotation").split()
+        pitch, yaw, roll = self.ue5.request(f"vget /camera/{cameraID}/rotation").split()
         return float(pitch), float(yaw), float(roll)
 
     def setCameraYaw(self, yawDegree: float, cameraID: int = 0):
@@ -70,36 +69,26 @@ class UE5EnvWrapper:
     def back(self, value: float) -> None:
         """Move Robot backwards a number of centimeters. Interacts with UE5 Blueprint"""
         self.ue5.request(f"vset /action/keyboard down 1")
-        self.ue5.request("vset /camera/0/rotation 0 0 0")
-
-    def open_level(levelName: str) -> None:
-        """Opens a new level in the UE5 Environment. UnrealCV built in command"""
-        # self.ue5.request(f"open {levelName}")
 
     def request_image(self, cameraID: int):
         """Get an image from a specific camera, used with matplotlib"""
         image_data = self.ue5.request(f"vget /camera/{cameraID}/lit jpg")
         return read_png(image_data)
 
-    def save_image(self, cameraNum: int, annotation: str) -> None:
+    def save_image(self, cam_num: int) -> None:
         """Saves Image to a specific path
 
         Args:
             cameraNum (Int): Camera to get picture from
             annotation (Str): File extension for image(jpg, png)
-            image_name (str): name of image to save
+            path_to_unreal_project (Str): Path to the unreal project currently running
 
         Returns:
-            str: path image was saved to
+            str: path where the image was saved.
         """
-        # imagePath = ue5.request(f"vget /camera/{cameraNum}/lit high.png")
-        # return imagePath
         self.ue5.request("vset /action/keyboard tab 0.1")
+        # Sleep in order for the photo to be properly saved
         time.sleep(1)
-        imagePath = f"{self.highres_photo_location_win}/Unreal Projects/OldenborgUE/Saved/Screenshots/WindowsEditor/highres.png"
-        return imagePath
-        # TODO change to PathLib and find out if unrealcv will store the file on the local machine or in the cloud
-        # shutil.move(imagePath, finalPath)
 
     def show(self):
         """If matplotlib is being used, show the image taken to the plot"""
