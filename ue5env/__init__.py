@@ -14,50 +14,50 @@ class UE5EnvWrapper:
     def __init__(self, port: int = 8500):
         self.ue5 = unrealcv.Client(("localhost", port))
         self.ue5.connect(timeout=5)
-        if self.ue5.isconnected():
+        if self.ue5.is_connected():
             print(self.ue5.request("vget /unrealcv/status"))
         else:
             raise Exception(f"Failed to connect to the UnrealCV server at port: {port}")
 
-    def isconnected(self):
+    def is_connected(self):
         """Is the program connected to Unreal"""
-        return self.ue5.isconnected()
+        return self.ue5.is_connected()
 
     def reset(self):
         """Reset robot to start location. Interacts with UE5 Blueprint."""
         self.ue5.request(f"vset /action/keyboard backspace 0.1")
 
-    def getCameraLocation(self, cameraID: int = 0) -> tuple[float, float, float]:
+    def get_camera_location(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns X, Y, Z location of a camera in the Unreal Environment."""
         x, y, z = self.ue5.request(f"vget /camera/{cameraID}/location").split()
         return float(x), float(y), float(z)
 
-    def setCameraLocation(self, x: float, y: float, z: float, cameraID: int = 0):
+    def set_camera_location(self, x: float, y: float, z: float, cameraID: int = 0):
         """Sets X, Y, and Z values of an Unreal Camera."""
         self.ue5.request(f"vset /camera/{cameraID}/location {x} {y} {z}")
 
-    def getCameraRotation(self, cameraID: int = 0) -> tuple[float, float, float]:
+    def get_camera_rotation(self, cameraID: int = 0) -> tuple[float, float, float]:
         """Returns Pitch, Yaw, and Roll values for Camera number."""
         pitch, yaw, roll = self.ue5.request(f"vget /camera/{cameraID}/rotation").split()
         return float(pitch), float(yaw), float(roll)
 
-    def setCameraYaw(self, yawDegree: float, cameraID: int = 0):
+    def set_camera_yaw(self, yawDegree: float, cameraID: int = 0):
         """Set Camera Yaw value in unreal for a specific camera."""
-        currentPitch, _, currentRoll = self.getCameraRotation(cameraID)
+        currentPitch, _, currentRoll = self.get_camera_rotation(cameraID)
         self.ue5.request(
             f"vset /camera/{cameraID}/rotation {currentPitch} {yawDegree} {currentRoll}"
         )
 
     def left(self, degreeRot: float, cameraID: int = 0) -> None:
         """Rotate camera left a number of degrees."""
-        currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraID)
+        currentPitch, currentYaw, currentRoll = self.get_camera_rotation(cameraID)
         self.ue5.request(
             f"vset /camera/0/rotation {currentPitch} {float(currentYaw) - degreeRot} {currentRoll}"
         )
 
     def right(self, degreeRot: float, cameraID: int = 0) -> None:
         """Rotate camera right a number of degrees."""
-        currentPitch, currentYaw, currentRoll = self.getCameraRotation(cameraID)
+        currentPitch, currentYaw, currentRoll = self.get_camera_rotation(cameraID)
         self.ue5.request(
             f"vset /camera/0/rotation {currentPitch} {float(currentYaw) + degreeRot} {currentRoll}"
         )
