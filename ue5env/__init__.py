@@ -7,18 +7,18 @@ import time
 class UE5EnvWrapper:
     """Handles interaction between the UE5 environment and the a program."""
 
-    def __init__(self, port: int = 8500):
+    def __init__(self, port: int = 9000):
         self.ue5 = unrealcv.Client(("localhost", port))
         self.ue5.connect(timeout=5)
 
-        if self.ue5.is_connected():
+        if self.ue5.isconnected():
             print(self.ue5.request("vget /unrealcv/status"))
         else:
             raise Exception(f"Failed to connect to the UnrealCV server at port: {port}")
 
     def is_connected(self):
         """Is the program connected to Unreal."""
-        return self.ue5.is_connected()
+        return self.ue5.isconnected()
 
     def reset(self):
         """Reset agent to start location using a UE Blueprint command."""
@@ -72,7 +72,7 @@ class UE5EnvWrapper:
 
     def save_image(self, cam_num: int) -> None:
         """Saves image using default name and path."""
-        self.ue5.request("vset /action/keyboard tab 0.1")
+        self.ue5.request("vrun HighResShot 1")
         # TODO: we also sleep in boxunreal?
         # Sleep in order for the photo to be properly saved
         # time.sleep(1)
