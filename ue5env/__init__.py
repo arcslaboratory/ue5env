@@ -24,6 +24,11 @@ class UE5EnvWrapper:
         """Reset agent to start location using a UE Blueprint command."""
         self.ue5.request("vset /action/keyboard backspace 0.1")
 
+    def get_project_name(self):
+        """Returns the name of the current connected project."""
+        name = self.ue5.request("vget /scene/name")
+        return name
+
     def get_camera_location(self, cam_id: int = 0) -> tuple[float, float, float]:
         """Returns x, y, z location of a camera in the Unreal Environment."""
         x, y, z = self.ue5.request(f"vget /camera/{cam_id}/location").split()
@@ -75,7 +80,7 @@ class UE5EnvWrapper:
         self.ue5.request("vrun HighResShot 1")
         # TODO: we also sleep in boxunreal?
         # Sleep in order for the photo to be properly saved
-        # time.sleep(1)
+        time.sleep(1)
 
     def show(self):
         """If matplotlib is being used, show the image taken to the plot"""
