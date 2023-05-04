@@ -62,9 +62,10 @@ class UE5EnvWrapper:
         """Rotate camera right a number of degrees."""
         self.__rotate(rotation, cam_id)
 
+    # TODO: fix forward and back function
     def forward(self):
         """Move Robot forward."""
-        self.ue5.request("vset /action/keyboard up 1")
+        self.ue5.request(f"vset /action/keyboard up 1")
 
     def back(self):
         """Move Robot backwards."""
@@ -78,7 +79,6 @@ class UE5EnvWrapper:
     def save_image(self, cam_num: int) -> None:
         """Saves image using default name and path."""
         self.ue5.request("vrun HighResShot 1")
-        # TODO: we also sleep in boxunreal?
         # Sleep in order for the photo to be properly saved
         time.sleep(1)
 
