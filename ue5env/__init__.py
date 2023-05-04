@@ -65,7 +65,7 @@ class UE5EnvWrapper:
     # TODO: fix forward and back function
     def forward(self):
         """Move Robot forward."""
-        self.ue5.request(f"vset /action/keyboard up 1")
+        self.ue5.request("vset /action/keyboard up 1")
 
     def back(self):
         """Move Robot backwards."""
