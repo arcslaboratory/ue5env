@@ -7,22 +7,27 @@ import time
 class UE5EnvWrapper:
     """Handles interaction between the UE5 environment and the a program."""
 
-    def __init__(self, port: int = 8500):
+    def __init__(self, port: int = 9000):
         self.ue5 = unrealcv.Client(("localhost", port))
         self.ue5.connect(timeout=5)
 
-        if self.ue5.is_connected():
+        if self.ue5.isconnected():
             print(self.ue5.request("vget /unrealcv/status"))
         else:
             raise Exception(f"Failed to connect to the UnrealCV server at port: {port}")
 
     def is_connected(self):
         """Is the program connected to Unreal."""
-        return self.ue5.is_connected()
+        return self.ue5.isconnected()
 
     def reset(self):
         """Reset agent to start location using a UE Blueprint command."""
         self.ue5.request("vset /action/keyboard backspace 0.1")
+
+    def get_project_name(self):
+        """Returns the name of the current connected project."""
+        name = self.ue5.request("vget /scene/name")
+        return name
 
     def get_camera_location(self, cam_id: int = 0) -> tuple[float, float, float]:
         """Returns x, y, z location of a camera in the Unreal Environment."""
@@ -57,6 +62,7 @@ class UE5EnvWrapper:
         """Rotate camera right a number of degrees."""
         self.__rotate(rotation, cam_id)
 
+    # TODO: fix forward and back function
     def forward(self):
         """Move Robot forward."""
         self.ue5.request("vset /action/keyboard up 1")
@@ -72,10 +78,9 @@ class UE5EnvWrapper:
 
     def save_image(self, cam_num: int) -> None:
         """Saves image using default name and path."""
-        self.ue5.request("vset /action/keyboard tab 0.1")
-        # TODO: we also sleep in boxunreal?
+        self.ue5.request("vrun HighResShot 1")
         # Sleep in order for the photo to be properly saved
-        # time.sleep(1)
+        time.sleep(1)
 
     def show(self):
         """If matplotlib is being used, show the image taken to the plot"""
